@@ -1,0 +1,13 @@
+.graph-card {
+  margin-top: 30px; 
+}
+
+.graph-card h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.recharts-text {
+  fill: #aaa;
+  font-size: 0.9rem;
+}

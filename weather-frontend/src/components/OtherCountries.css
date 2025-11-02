@@ -1,0 +1,49 @@
+.countries-card h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.countries-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.city-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #121212; 
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 12px 15px;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+  width: 100%;
+  text-align: left;
+  color: #fff;
+}
+
+.city-item:hover {
+  background-color: #1E1E1E;
+  border-color: #555;
+}
+
+.city-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.city-name {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.city-country {
+  font-size: 0.8rem;
+  color: #aaa;
+}
+
+.city-icon {
+  font-size: 1.5rem;
+}

@@ -1,0 +1,12 @@
+# Dependencies
+node_modules/
+weather-backend/node_modules/
+weather-frontend/node_modules/
+
+# Secret Files
+.env
+serviceAccountKey.json
+*.log
+
+# Build folder
+weather-frontend/build/

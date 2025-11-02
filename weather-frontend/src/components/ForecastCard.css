@@ -1,0 +1,43 @@
+.forecast-card h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.forecast-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.forecast-item {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: center;
+  text-align: center;
+}
+
+.forecast-day {
+  font-weight: 500;
+  color: #fff;
+  text-align: left;
+}
+
+.forecast-icon {
+  width: 40px;
+  height: 40px;
+}
+
+.forecast-temps {
+  text-align: right;
+}
+
+.forecast-temps .temp-max {
+  font-weight: 500;
+  color: #fff;
+  margin-right: 8px;
+}
+
+.forecast-temps .temp-min {
+  font-weight: 500;
+  color: #aaa;
+}

@@ -1,0 +1,36 @@
+.highlights-card h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.highlights-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); 
+  gap: 20px;
+}
+
+.highlight-item {
+  background-color: #121212; 
+  border-radius: 15px;
+  padding: 20px;
+  text-align: center;
+}
+
+.highlight-item h4 {
+  margin: 0 0 10px 0;
+  color: #aaa;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.highlight-item .highlight-value {
+  font-size: 1.8rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.highlight-item .highlight-sub {
+  color: #aaa;
+  margin-top: 5px;
+  font-size: 0.9rem;
+}
