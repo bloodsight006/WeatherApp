@@ -9,7 +9,17 @@ require('dotenv').config();
 // --- 2. Import Firebase Admin tools ---
 const admin = require('firebase-admin');
 // It will find the key from the "Secret File" we just made
-const serviceAccount = require('./serviceAccountKey.json'); 
+// ❗️ THIS IS THE FIX ❗️
+// This code block makes your server work BOTH locally AND on Render
+let serviceAccount;
+try {
+  // This is the path for the Render "Secret File"
+  serviceAccount = require('/etc/secrets/serviceAccountKey.json');
+} catch (e) {
+  // This is the path for your local computer
+  serviceAccount = require('./serviceAccountKey.json');
+}
+// ❗️ END OF FIX ❗️
 
 // --- 3. Initialize Express (our server) ---
 const app = express();
