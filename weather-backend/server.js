@@ -25,9 +25,14 @@ try {
 } catch (err) {
   console.error('Error reading local history files:', err.message);
 }
-app.use(cors());
-app.use(express.json());
+// --- 5. Use Middleware ---
+// We must specifically tell CORS to allow your live frontend URL
+const corsOptions = {
+  origin: 'https://weather-app-umber-xi-58.vercel.app' 
+};
+app.use(cors(corsOptions));
 
+app.use(express.json());
 // --- 5. DEFINE OUR API ROUTES ---
 
 /*
