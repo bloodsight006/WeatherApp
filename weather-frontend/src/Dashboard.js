@@ -8,7 +8,7 @@ import ForecastCard from './components/ForecastCard';
 import OtherCountries from './components/OtherCountries';
 import { useCity } from './context/CityContext'; 
 // Your backend server URL
-const API_BASE_URL = 'https://weather-backend-api-u29m.onrender.com';
+const API_BASE_URL = 'http://localhost:5001/api';
 
 const Dashboard = () => {
   const [currentWeather, setCurrentWeather] = useState(null);

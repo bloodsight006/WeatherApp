@@ -3,7 +3,7 @@ import axios from 'axios';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useCity } from '../context/CityContext';
 // This is the URL of your backend server
-const API_BASE_URL = 'https://weather-backend-api-u29m.onrender.com';
+const API_BASE_URL = 'http://localhost:5001/api';
 
 // --- Helper Functions (copied from our other graphs) ---
 const formatAxisDate = (dateString) => {

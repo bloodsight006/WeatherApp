@@ -1,41 +1,43 @@
-// server.js (FINAL - Firebase Version)
+// server.js (FINAL - Localhost Version)
 
-// --- 1. Import tools ---
+// --- 1. Import all the tools we need ---
 const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
 require('dotenv').config();
+const fs = require('fs'); // 👈 Import File System
+const path = require('path'); // 👈 Import Path
 
-// --- 2. Import Firebase Admin tools ---
-const admin = require('firebase-admin');
-// It will find the key from the "Secret File" we just made
-// ❗️ THIS IS THE FIX ❗️
-// This code block makes your server work BOTH locally AND on Render
-let serviceAccount;
-try {
-  // This is the path for the Render "Secret File"
-  serviceAccount = require('/etc/secrets/serviceAccountKey.json');
-} catch (e) {
-  // This is the path for your local computer
-  serviceAccount = require('./serviceAccountKey.json');
-}
-// ❗️ END OF FIX ❗️
-
-// --- 3. Initialize Express (our server) ---
+// --- 2. Initialize Express (our server) ---
 const app = express();
-const PORT = process.env.PORT || 5001; 
+const PORT = process.env.PORT || 5001;
 
-// --- 4. Initialize Firebase Admin ---
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
-});
-const db = admin.firestore(); // Our database
+// --- 3. Load our local JSON data ---
+let weatherHistory = [];
+let aqiHistory = [];
 
-// --- 5. Use Middleware ---
-app.use(cors()); // Use the simple, open CORS. This is robust.
+try {
+  // Load Weather Data
+  const weatherPath = path.join(__dirname, 'weather_data.json');
+  const weatherContents = fs.readFileSync(weatherPath, 'utf8');
+  weatherHistory = JSON.parse(weatherContents);
+  console.log(`✅ Loaded ${weatherHistory.length} weather history records from JSON file.`);
+  
+  // Load AQI Data
+  const aqiPath = path.join(__dirname, 'aqi_data.json');
+  const aqiContents = fs.readFileSync(aqiPath, 'utf8');
+  aqiHistory = JSON.parse(aqiContents);
+  console.log(`✅ Loaded ${aqiHistory.length} AQI history records from JSON file.`);
+
+} catch (err) {
+  console.error('❌ Error reading local history files:', err.message);
+}
+
+// --- 4. Use Middleware ---
+app.use(cors()); // Allows all cross-origin requests
 app.use(express.json());
 
-// --- 6. DEFINE OUR API ROUTES ---
+// --- 5. DEFINE OUR API ROUTES ---
 
 /*
  * API Route 1: Get REAL-TIME weather
@@ -74,24 +76,21 @@ app.get('/api/aqi', async (req, res) => {
   });
 
 /*
- * API Route 3: Get HISTORICAL WEATHER (from Firebase)
+ * API Route 3: Get HISTORICAL WEATHER (from local JSON)
  */
-app.get('/api/history/weather/:city', async (req, res) => {
+app.get('/api/history/weather/:city', (req, res) => {
   try {
-    let { city } = req.params;
-    if (city.toLowerCase() === 'bengaluru') city = 'bangalore';
+    const { city } = req.params;
+    const lowerCaseCity = city.toLowerCase();
 
-    const snapshot = await db.collection('weatherHistory')
-      .where('city', '==', city.toLowerCase()) // Use lowercase
-      .orderBy('date', 'desc') 
-      .limit(30)
-      .get();
+    // Simple filter
+    let cityData = weatherHistory
+      .filter(record => record.city && record.city.toLowerCase() === lowerCaseCity)
+      .slice(-30);
 
-    if (snapshot.empty) {
+    if (cityData.length === 0) {
       return res.status(404).json({ message: 'No weather history found.' });
     }
-    
-    let cityData = snapshot.docs.map(doc => doc.data()).reverse();
 
     // Date Fix
     const today = new Date();
@@ -110,24 +109,20 @@ app.get('/api/history/weather/:city', async (req, res) => {
 });
 
 /*
- * API Route 4: Get HISTORICAL AQI (from Firebase)
+ * API Route 4: Get HISTORICAL AQI (from local JSON)
  */
-app.get('/api/history/aqi/:city', async (req, res) => {
+app.get('/api/history/aqi/:city', (req, res) => {
   try {
-    let { city } = req.params;
-    if (city.toLowerCase() === 'bangalore') city = 'bengaluru';
+    const { city } = req.params;
+    
+    // Simple filter
+    let cityData = aqiHistory
+      .filter(record => record.City && record.City.toLowerCase() === city.toLowerCase())
+      .slice(-30); 
 
-    const snapshot = await db.collection('aqiHistory')
-      .where('City', '==', city) // ❗️ Case-sensitive 'City'
-      .orderBy('Date', 'desc') // ❗️ Case-sensitive 'Date'
-      .limit(30)
-      .get();
-
-    if (snapshot.empty) {
+    if (cityData.length === 0) {
       return res.status(404).json({ message: 'No AQI history found.' });
     }
-
-    let cityData = snapshot.docs.map(doc => doc.data()).reverse();
 
     // Standardize output
     const cleanData = cityData.map((record, index) => {
@@ -136,7 +131,7 @@ app.get('/api/history/aqi/:city', async (req, res) => {
       newDate.setDate(today.getDate() - (cityData.length - 1 - index));
       return {
         date: newDate.toISOString(),
-        aqi: record.AQI || 0
+        aqi: record.AQI || 0 // Use the 'AQI' (all caps) key
       };
     });
     res.json(cleanData); 
@@ -169,23 +164,18 @@ app.get('/api/forecast', async (req, res) => {
 /*
  * API Route 6: "PREDICTION" (Mocked)
  */
-app.get('/api/predict/:city', async (req, res) => {
+app.get('/api/predict/:city', (req, res) => {
   try {
-    let { city } = req.params;
-    if (city.toLowerCase() === 'bengaluru') city = 'bangalore';
+    const { city } = req.params;
     
-    // Get history data from Firebase
-    const snapshot = await db.collection('weatherHistory')
-      .where('city', '==', city.toLowerCase()) // Use lowercase
-      .orderBy('date', 'desc')
-      .limit(7)
-      .get();
+    // Simple filter
+    let historyData = weatherHistory
+      .filter(record => record.city && record.city.toLowerCase() === city.toLowerCase())
+      .slice(-7); 
 
-    if (snapshot.empty) {
+    if (historyData.length === 0) {
       return res.json([]);
     }
-    
-    let historyData = snapshot.docs.map(doc => doc.data());
 
     const today = new Date();
     const predictions = [];
@@ -193,7 +183,7 @@ app.get('/api/predict/:city', async (req, res) => {
     for (let i = 1; i <= 7; i++) {
       const futureDate = new Date(today);
       futureDate.setDate(today.getDate() + i); 
-      const baseTemp = historyData[i - 1].temperature_2m_max;
+      const baseTemp = historyData[i % historyData.length].temperature_2m_max;
       const noise = (Math.random() - 0.5) * 2;
       const predictedTemp = (baseTemp + noise).toFixed(1);
 
@@ -208,7 +198,7 @@ app.get('/api/predict/:city', async (req, res) => {
   }
 });
 
-// --- 7. Start the Server ---
+// --- 6. Start the Server ---
 app.listen(PORT, () => {
   console.log(`✅ Server is running on http://localhost:${PORT}`);
 });

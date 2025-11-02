@@ -4,7 +4,7 @@ import axios from 'axios';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useCity } from '../context/CityContext'; // Get the global city
 
-const API_BASE_URL = 'https://weather-backend-api-u29m.onrender.com';
+const API_BASE_URL = 'http://localhost:5001/api';
 
 // --- Helper Functions ---
 const formatAxisDate = (dateString) => {
