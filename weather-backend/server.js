@@ -5,8 +5,8 @@ const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
 require('dotenv').config();
-const fs = require('fs'); // 👈 Import File System
-const path = require('path'); // 👈 Import Path
+const fs = require('fs'); //
+const path = require('path'); // 
 
 // --- 2. Initialize Express (our server) ---
 const app = express();
@@ -21,16 +21,16 @@ try {
   const weatherPath = path.join(__dirname, 'weather_data.json');
   const weatherContents = fs.readFileSync(weatherPath, 'utf8');
   weatherHistory = JSON.parse(weatherContents);
-  console.log(`✅ Loaded ${weatherHistory.length} weather history records from JSON file.`);
+  console.log(` Loaded ${weatherHistory.length} weather history records from JSON file.`);
   
   // Load AQI Data
   const aqiPath = path.join(__dirname, 'aqi_data.json');
   const aqiContents = fs.readFileSync(aqiPath, 'utf8');
   aqiHistory = JSON.parse(aqiContents);
-  console.log(`✅ Loaded ${aqiHistory.length} AQI history records from JSON file.`);
+  console.log(` Loaded ${aqiHistory.length} AQI history records from JSON file.`);
 
 } catch (err) {
-  console.error('❌ Error reading local history files:', err.message);
+  console.error(' Error reading local history files:', err.message);
 }
 
 // --- 4. Use Middleware ---
@@ -200,5 +200,5 @@ app.get('/api/predict/:city', (req, res) => {
 
 // --- 6. Start the Server ---
 app.listen(PORT, () => {
-  console.log(`✅ Server is running on http://localhost:${PORT}`);
+  console.log(` Server is running on http://localhost:${PORT}`);
 });
